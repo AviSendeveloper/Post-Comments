@@ -1,20 +1,29 @@
-const Post = require("../Models/Post");
+const Comment = require("../Models/Comment");
 
 exports.index = async (req, res) => {
-    const posts = await Post.find({});
-    return res.status(200).json({
-        status: true,
-        data: posts,
-    });
+    try {
+        console.log(req);
+        const comments = await Comment.find({});
+        return res.status(200).json({
+            status: true,
+            data: comments,
+        });
+    } catch (error) {
+        console.log("comment index", error);
+        res.status(500).json({
+            status: false,
+            message: error.message,
+        });
+    }
 };
 
 exports.find = async (req, res) => {
     try {
         const id = req.body.id ?? req.query.id;
-        const post = await Post.find({ _id: id });
+        const comment = await Comment.find({ _id: id });
         return res.status(200).json({
             status: true,
-            data: post,
+            data: comment,
         });
     } catch (error) {
         console.log(error);
@@ -23,15 +32,17 @@ exports.find = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        let { title, url='' } = req.body;
-        if (url === '') {
-            url = title.toLowerCase().split(' ').join('-');
-        }
+        const { comment, postId, parentCommentId } = req.body;
         const user = req.user;
-        const insertdPost = await Post.create({ title, url, userId: user._id });
+        const insertedComment = await Comment.create({
+            comment,
+            postId,
+            userId: user._id,
+            parentCommentId,
+        });
         return res.status(200).json({
             status: true,
-            data: insertdPost,
+            data: insertedComment,
         });
     } catch (error) {
         console.log(error);
@@ -44,18 +55,15 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        let { title, url='' } = req.body;
-        if (url === '') {
-            url = title.toLowerCase().split(' ').join('-');
-        }
-        const updatedPost = await Post.findByIdAndUpdate(
+        const { comment, postId, userId, parentCommentId } = req.body;
+        const updatedComment = await Comment.findByIdAndUpdate(
             { _id: req.body.id },
-            { title, url },
+            { comment, postId, parentCommentId },
             { new: true }
         );
         return res.status(200).json({
             status: true,
-            data: updatedPost,
+            data: updatedComment,
         });
     } catch (error) {
         console.log(error);
@@ -69,7 +77,7 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         const { id } = req.body;
-        const updatedPost = await Post.deleteOne({ _id: id });
+        const deletedComment = await Comment.deleteOne({ _id: id });
         return res.status(200).json({
             status: true,
         });
