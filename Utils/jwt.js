@@ -16,6 +16,7 @@ exports.varifyToken = async (token) => {
         const result = await jwt.verify(token, secretToken);
         return result;
     } catch (error) {
+        console.log('varifyToken: ', error);
         throw new Error("Invalid token");
     }
 };
