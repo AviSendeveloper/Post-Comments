@@ -9,11 +9,11 @@ exports.index = async (req, res) => {
             data: comments,
         });
     } catch (error) {
-        console.log('comment index', error);
+        console.log("comment index", error);
         res.status(500).json({
             status: false,
-            message: error.message
-        })
+            message: error.message,
+        });
     }
 };
 
@@ -32,11 +32,14 @@ exports.find = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        const { comment, postId, userId, parentCommentId } = req.body;
-        console.log(comment, postId, userId, parentCommentId);
-        const insertedComment = await Comment.create(
-            { comment, postId, userId, parentCommentId }
-        );
+        const { comment, postId, parentCommentId } = req.body;
+        const user = req.user;
+        const insertedComment = await Comment.create({
+            comment,
+            postId,
+            userId: user._id,
+            parentCommentId,
+        });
         return res.status(200).json({
             status: true,
             data: insertedComment,
@@ -53,10 +56,9 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const { comment, postId, userId, parentCommentId } = req.body;
-        // console.log(title);
         const updatedComment = await Comment.findByIdAndUpdate(
             { _id: req.body.id },
-            { comment, postId, userId, parentCommentId },
+            { comment, postId, parentCommentId },
             { new: true }
         );
         return res.status(200).json({

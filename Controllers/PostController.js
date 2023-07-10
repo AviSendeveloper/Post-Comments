@@ -23,8 +23,12 @@ exports.find = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        const { title, url } = req.body;
-        const insertdPost = await Post.create({ title, url });
+        let { title, url='' } = req.body;
+        if (url === '') {
+            url = title.toLowerCase().split(' ').join('-');
+        }
+        const user = req.user;
+        const insertdPost = await Post.create({ title, url, userId: user._id });
         return res.status(200).json({
             status: true,
             data: insertdPost,
@@ -40,8 +44,10 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        const { title, url } = req.body;
-        console.log(title);
+        let { title, url='' } = req.body;
+        if (url === '') {
+            url = title.toLowerCase().split(' ').join('-');
+        }
         const updatedPost = await Post.findByIdAndUpdate(
             { _id: req.body.id },
             { title, url },

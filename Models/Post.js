@@ -4,16 +4,20 @@ const postSchema = new Schema(
     {
         title: {
             type: String,
-            require: true,
+            required: true,
         },
         url: {
             type: String,
-            require: true,
+            required: true,
+        },
+        userId: {
+            type: String,
+            required: true,
         },
     },
     { timestamps: true }
 );
 
-const Post = model('post', postSchema);
+const Post = model("post", postSchema);
 
 module.exports = Post;
