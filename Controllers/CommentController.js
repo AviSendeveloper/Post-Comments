@@ -1,9 +1,11 @@
 const Comment = require("../Models/Comment");
+const { responseLogger: logger } = require("../Config/winston-logger.config");
 
 exports.index = async (req, res) => {
     try {
-        console.log(req);
         const comments = await Comment.find({});
+        logger.log('info', 'hello', comments);
+        
         return res.status(200).json({
             status: true,
             data: comments,

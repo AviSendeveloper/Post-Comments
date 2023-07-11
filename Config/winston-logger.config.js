@@ -1,5 +1,9 @@
 const { transports, format, createLogger } = require("winston");
 
+const responseLogFormat = format.printf(({level, timestamp, meta, message}) => {
+    return `${level} ${timestamp} ${message}`;
+});
+
 exports.responseLogger = createLogger({
     transports: [
         new transports.Console(),
@@ -10,7 +14,8 @@ exports.responseLogger = createLogger({
     format: format.combine(
         format.json(),
         format.timestamp(),
-        format.prettyPrint()
+        format.prettyPrint(),
+        responseLogFormat
     ),
 });
 
